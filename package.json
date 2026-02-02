@@ -5,12 +5,17 @@
   "private": true,
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "prettier": "^3.8.1"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "@types/morgan": "^1.9.10",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "morgan": "^1.10.1"
   }
 }
