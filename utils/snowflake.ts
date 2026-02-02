@@ -66,3 +66,7 @@ function deconstruct_snowflake(snowflake: bigint) {
   // Return deconstructed snowflake
   return { timestamp, worker_id, sequence_number };
 }
+
+// Initialise a snowflake generator for the application.
+export const generator = new SnowflakeGenerator(0);
+export default generator;

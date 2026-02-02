@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { database } from "./database.ts";
 import { username } from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey";
+import generator from "./snowflake.ts";
 
 export const auth = betterAuth({
   database,
@@ -26,4 +27,9 @@ export const auth = betterAuth({
     }),
     passkey(),
   ],
+  advanced: {
+    database: {
+      generateId: () => generator.generate().toString(),
+    },
+  },
 });
