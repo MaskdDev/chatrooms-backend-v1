@@ -592,6 +592,138 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /rooms/{roomId}/messages/{messageId}:
+    get:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Messages
+      summary: Fetch a message from a room.
+      parameters:
+        - name: roomId
+          in: path
+          description: The ID of the room to fetch the message from.
+          required: true
+          schema:
+            type: string
+        - name: messageId
+          in: path
+          description: The ID of the message to fetch.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully fetched message.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: User does not have the permission to view messages in this channel.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Room or message with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Messages
+      summary: Edit a message in a room.
+      parameters:
+        - name: roomId
+          in: path
+          description: The ID of the room to edit the message in.
+          required: true
+          schema:
+            type: string
+        - name: messageId
+          in: path
+          description: The ID of the message to edit.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessagePatch"
+      responses:
+        "204":
+          description: Successfully edited message.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: User does not have the permission to edit this message.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Room or message with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Messages
+      summary: Delete a message in a room.
+      parameters:
+        - name: roomId
+          in: path
+          description: The ID of the room to delete the message in.
+          required: true
+          schema:
+            type: string
+        - name: messageId
+          in: path
+          description: The ID of the message to delete.
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Successfully deleted message.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: User does not have the permission to delete this message.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Room or message with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   securitySchemes:
     cookieAuth:
