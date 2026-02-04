@@ -195,6 +195,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "403":
+          description: User does not have the permission to delete this room.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "404":
           description: Room with given ID not found.
           content:
@@ -246,7 +252,7 @@ paths:
       security:
         - cookieAuth: [ ]
       tags:
-        - Rooms
+        - Room Members
       summary: Remove a member from a room.
       description: Remove a member from the room with the specified ID.
       parameters:
@@ -271,8 +277,53 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "403":
+          description: User does not have the permission to remove this member.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "404":
           description: Room or member with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /rooms/{roomId}/invites:
+    get:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Room Invites
+      summary: Get the current invites for this room.
+      parameters:
+        - name: roomId
+          in: path
+          description: The ID of the room to get the invites for.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  invites:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Invite"
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Room with given ID not found.
           content:
             application/json:
               schema:
