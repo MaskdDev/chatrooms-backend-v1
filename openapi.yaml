@@ -100,6 +100,13 @@ paths:
       tags:
         - Rooms
       summary: Get information on a specific room.
+      parameters:
+        - name: roomId
+          in: path
+          description: The ID of the room to get the information of.
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Successful operation.
@@ -127,6 +134,13 @@ paths:
         - Rooms
       summary: Update an existing room.
       description: Update an existing room as the currently logged in user.
+      parameters:
+        - name: roomId
+          in: path
+          description: The ID of the room to update.
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -165,6 +179,13 @@ paths:
         - Rooms
       summary: Delete a room.
       description: Delete the room with the specified ID.
+      parameters:
+        - name: roomId
+          in: path
+          description: The ID of the room to delete.
+          required: true
+          schema:
+            type: string
       responses:
         "201":
           description: Successfully deleted room.
@@ -188,6 +209,13 @@ paths:
       tags:
         - Room Members
       summary: Get the members in a specific room.
+      parameters:
+        - name: roomId
+          in: path
+          description: The ID of the room to get the members of.
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Successful operation.
@@ -208,6 +236,43 @@ paths:
                 $ref: "#/components/schemas/Error"
         "404":
           description: Room with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /rooms/{roomId}/members/{memberId}:
+    delete:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Rooms
+      summary: Remove a member from a room.
+      description: Remove a member from the room with the specified ID.
+      parameters:
+        - name: roomId
+          in: path
+          description: The ID of the room to remove a member from.
+          required: true
+          schema:
+            type: string
+        - name: memberId
+          in: path
+          description: The user ID of the member to remove.
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Successfully removed member.
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Room or member with given ID not found.
           content:
             application/json:
               schema:
