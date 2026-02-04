@@ -4,6 +4,8 @@ import morgan from "morgan";
 import { createServer } from "http";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./utils/auth.ts";
+import apiSpec from "./openapi.yaml";
+import swaggerUi from "swagger-ui-express";
 
 // Create Express application and HTTP server
 const app = express();
@@ -18,6 +20,9 @@ app.all("/api/auth/{*any}", toNodeHandler(auth));
 
 // Use JSON middleware
 app.use(express.json());
+
+// Expose Swagger UI
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(apiSpec));
 
 // Start server
 const port = process.env.PORT || 3000;
