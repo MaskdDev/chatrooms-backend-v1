@@ -74,7 +74,7 @@ paths:
             schema:
               $ref: "#/components/schemas/RoomCreate"
       responses:
-        "201":
+        "200":
           description: Successfully created room.
           content:
             application/json:
@@ -328,6 +328,57 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+    post:
+      security:
+        - cookieAuth: [ ]
+      tags:
+        - Room Invites
+      summary: Create a new invite for this room.
+      description: Create a new invite for a room as the currently logged in user.
+      parameters:
+        - name: roomId
+          in: path
+          description: The ID of the room to create an invite for.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InviteCreate"
+      responses:
+        "200":
+          description: Successfully created room invite.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invite"
+        "401":
+          description: Not Authorised.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: User does not have the permission to create an invite for this room.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Room with given ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Invalid fields provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   securitySchemes:
@@ -399,18 +450,21 @@ components:
         name: General
         description: A general place for conversation or smth :)
 
-    CreateInvite:
+    InviteCreate:
       type: object
       properties:
         max_uses:
           type: integer
           format: int32
         expiry:
-          type: integer
-          format: int64
+          type: string
+          format: date-time
       required:
         - max_uses
         - expiry
+      example:
+        max_uses: 5
+        expiry: 2026-02-02T22:00:00Z
 
     Invite:
       type: object
