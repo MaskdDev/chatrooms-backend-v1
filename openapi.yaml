@@ -829,8 +829,6 @@ components:
     Invite:
       type: object
       properties:
-        id:
-          type: string
         code:
           type: string
         room:
