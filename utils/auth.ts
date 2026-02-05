@@ -21,6 +21,7 @@ export const auth = betterAuth({
     },
   },
   account: {
+    modelName: "accounts",
     accountLinking: {
       trustedProviders: ["google", "github"],
     },
@@ -32,6 +33,15 @@ export const auth = betterAuth({
     }),
     passkey(),
   ],
+  user: {
+    modelName: "users",
+  },
+  session: {
+    modelName: "sessions",
+  },
+  verification: {
+    modelName: "verifications",
+  },
   advanced: {
     database: {
       generateId: () => generator.generate().toString(),
