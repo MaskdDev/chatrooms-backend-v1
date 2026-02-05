@@ -11,7 +11,11 @@ export const database = new Pool({
  */
 export async function getUser(userId: string): Promise<UserProfile | null> {
   // Create query
-  const query = `SELECT "id", "username", "displayUsername" AS "displayName", "image" AS "avatarUrl" FROM "user" WHERE id=$1`;
+  const query = `
+    SELECT "id", "username", "displayUsername" AS "displayName", "image" AS "avatarUrl" 
+    FROM "user" 
+    WHERE id = $1
+  `;
   const values = [userId];
 
   // Run query
