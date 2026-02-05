@@ -1,7 +1,7 @@
 create table if not exists "room_members"
 (
     -- Identification
-    member_id  bigint      not null,
+    member_id  text        not null,
     room_id    bigint      not null,
 
     -- Record keeping
