@@ -44,6 +44,24 @@ export async function getInvite(inviteCode: string): Promise<Invite | null> {
 }
 
 /**
+ * Increment the number of uses for an invite with a given code.
+ *
+ * Assumes the room existed, does not throw an error if no rows were updated.
+ */
+export async function incrementInviteUses(inviteCode: string): Promise<void> {
+  // Create query
+  const query = `
+    update "room_invites"
+    set "uses" = "uses" + 1
+    where "invite_code" = $1
+  `;
+  const values = [inviteCode];
+
+  // Run query
+  await database.query(query, values);
+}
+
+/**
  * Create a new invite as a specified user for a specific room, with a specified max uses and expiry date.
  *
  * Throws an error on a fail.
