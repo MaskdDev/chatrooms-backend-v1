@@ -1,5 +1,6 @@
 import { Pool } from "pg";
-import type { Room, UserProfile } from "./types.ts";
+import type { Room, RoomRow, UserProfile } from "./types.ts";
+import generator from "./snowflake.ts";
 
 // Create database pool
 export const database = new Pool({
@@ -35,10 +36,19 @@ export async function getUser(userId: string): Promise<UserProfile | null> {
 export async function getUserRooms(userId: string): Promise<Room[]> {
   // Create query
   const query = `
-    select "rooms"."room_id" as "id", "rooms"."name", "rooms"."description"
+    select 
+      "rooms"."room_id" as "id", "rooms"."name", "rooms"."description", 
+      jsonb_build_object(
+        'id', "users".id,
+        'username', "users"."username",
+        'displayName', "users"."displayUsername",
+        'avatarUrl', "users"."image"
+      ) filter ( where "users".id is not null ) as "creator"
     from "room_members"
     join "rooms"
     on "rooms".room_id = "room_members".room_id
+    left join "users"
+    on "users".id = "rooms".creator_id
     where "room_members".member_id = $1
   `;
   const values = [userId];
@@ -48,4 +58,48 @@ export async function getUserRooms(userId: string): Promise<Room[]> {
 
   // Return query result
   return results.rows as Room[];
+}
+
+/**
+ * Create a new room as a specified user, with a specified name and optional description.
+ *
+ * Returns null on a fail.
+ */
+export async function createRoom(
+  userId: string,
+  name: string,
+  description: string | null,
+): Promise<Room | null> {
+  // Generate room ID
+  const roomId = generator.generate();
+
+  // Create query
+  const query = `
+    insert into "rooms" ("room_id", "creator_id", "name", "description") 
+    values ($1, $2, $3, $4)
+    returning *
+  `;
+  const values = [roomId, userId, name, description];
+
+  // Run query
+  const results = await database.query(query, values);
+
+  // Return query result
+  if (results.rows.length === 1) {
+    // Get row
+    const roomRow: RoomRow = results.rows[0];
+
+    // Fetch creator
+    const creator = await getUser(roomRow.creator_id);
+
+    // Return room
+    return {
+      id: roomRow.room_id,
+      creator,
+      name: roomRow.name,
+      description: roomRow.description,
+    };
+  } else {
+    return null;
+  }
 }

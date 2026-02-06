@@ -10,8 +10,22 @@ export type UserProfile = {
   avatarUrl: string | null;
 };
 
+/**
+ * A type representing a room.
+ */
 export type Room = {
   id: string;
+  creator: UserProfile | null;
+  name: string;
+  description: string | null;
+};
+
+/**
+ * A type representing a row in the rooms database table, without record keeping fields.
+ */
+export type RoomRow = {
+  room_id: string;
+  creator_id: string;
   name: string;
   description: string | null;
 };

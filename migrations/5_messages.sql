@@ -3,7 +3,7 @@ create table if not exists "messages"
     -- Identification
     message_id     bigint primary key,
     room_id        bigint      not null,
-    author_id      text        not null,
+    author_id      text,
 
     -- Message information
     content        text        not null,

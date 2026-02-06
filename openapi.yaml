@@ -753,6 +753,27 @@ components:
         username: horizell
         displayName: Horizell
 
+    NullableUser:
+      type: [ object, "null" ]
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        displayName:
+          type: string
+        avatarUrl:
+          type: [ string, "null" ]
+      required:
+        - id
+        - username
+        - displayName
+        - avatarUrl
+      example:
+        id: "12345676543245"
+        username: horizell
+        displayName: Horizell
+
     RoomCreate:
       type: object
       properties:
@@ -781,6 +802,8 @@ components:
       properties:
         id:
           type: string
+        creator:
+          $ref: "#/components/schemas/NullableUser"
         name:
           type: string
         description:
