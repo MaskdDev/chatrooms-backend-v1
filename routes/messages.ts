@@ -3,13 +3,14 @@ import { requireAuth } from "../utils/middleware.ts";
 import type { Request } from "express";
 import { isMember } from "../queries/members.ts";
 import { roomExists } from "../queries/rooms.ts";
-import { roomNotFound } from "../utils/responses.ts";
-import { createMessage, getMessages } from "../queries/messages.ts";
+import { messageNotFound, roomNotFound } from "../utils/responses.ts";
+import { createMessage, getMessage, getMessages } from "../queries/messages.ts";
 import type { MessageCreate } from "../utils/types.ts";
 
 // Create router for route group
 const router = Router({ mergeParams: true });
 type MergedRequest = Request<{ roomId: string }>;
+type MergedRequestWithMessage = Request<{ roomId: string; messageId: string }>;
 
 // Use auth middleware
 router.use(requireAuth);
@@ -111,6 +112,46 @@ router.post("/", async (req: MergedRequest, res) => {
 
     // Return message
     res.status(200).json(message);
+  }
+});
+
+/**
+ * Fetch a message from a room.
+ */
+router.get("/:messageId", async (req: MergedRequestWithMessage, res) => {
+  // Get user from request
+  const user = req.authUser;
+
+  // Check if user is authenticated
+  if (user) {
+    // Get room and message ID
+    const roomId = BigInt(req.params.roomId);
+    const messageId = BigInt(req.params.messageId);
+
+    // Check if room exists
+    if (!(await roomExists(roomId))) {
+      return roomNotFound(res);
+    }
+
+    // Check if user is in room.
+    const inRoom = await isMember(user.id, roomId);
+    if (!inRoom) {
+      return res.status(403).json({
+        code: 403,
+        message:
+          "User does not have the permission to view messages in this channel.",
+      });
+    }
+
+    // Get message
+    const message = await getMessage(messageId);
+
+    // Check if message exists
+    if (message) {
+      res.status(200).json(message);
+    } else {
+      return messageNotFound(res);
+    }
   }
 });
 
