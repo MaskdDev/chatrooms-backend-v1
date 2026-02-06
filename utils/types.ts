@@ -21,6 +21,16 @@ export type Room = {
 };
 
 /**
+ * A type representing a partial room, without the full creator object.
+ */
+export type PartialRoom = {
+  id: string;
+  creatorId: string | null;
+  name: string;
+  description: string | null;
+};
+
+/**
  * A type representing a row in the rooms database table, without record keeping fields.
  */
 export type RoomRow = {
@@ -51,7 +61,7 @@ export type RoomPatch = {
  */
 export type Invite = {
   code: string;
-  room: Room;
+  room: PartialRoom;
   creator: UserProfile;
   uses: number;
   max_uses: number;

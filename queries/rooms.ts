@@ -1,27 +1,19 @@
 import { database } from "../utils/database.ts";
-import type { Room, RoomRow } from "../utils/types.ts";
+import type { PartialRoom, Room, RoomRow } from "../utils/types.ts";
 import { generator } from "../utils/snowflake.ts";
 import { getUser } from "./users.ts";
 
 /**
- * Get all rooms the user with the given ID is in.
+ * Get the partial rooms for all rooms the user with the given ID is in.
  */
-export async function getUserRooms(userId: string): Promise<Room[]> {
+export async function getUserRooms(userId: string): Promise<PartialRoom[]> {
   // Create query
   const query = `
     select 
-        "rooms"."room_id" as "id", "rooms"."name", "rooms"."description", 
-        jsonb_build_object(
-            'id', "users".id,
-            'username', "users"."username",
-            'displayName', "users"."displayUsername",
-            'avatarUrl', "users"."image"
-        ) filter ( where "users".id is not null ) as "creator"
+        "rooms"."room_id" as "id", "rooms"."creator_id" as "creatorId", "rooms"."name", "rooms"."description"
     from "room_members"
     join "rooms"
         on "rooms".room_id = "room_members".room_id
-    left join "users"
-        on "users".id = "rooms".creator_id
     where "room_members".member_id = $1
   `;
   const values = [userId];
@@ -30,7 +22,7 @@ export async function getUserRooms(userId: string): Promise<Room[]> {
   const results = await database.query(query, values);
 
   // Return query result
-  return results.rows as Room[];
+  return results.rows as PartialRoom[];
 }
 
 /**

@@ -79,7 +79,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Room"
+                $ref: "#/components/schemas/PartialRoom"
         "401":
           description: Not Authorised.
           content:
@@ -818,8 +818,25 @@ components:
         - id
         - name
         - description
+
+    PartialRoom:
+      type: object
+      properties:
+        id:
+          type: string
+        creatorId:
+          type: string
+        name:
+          type: string
+        description:
+          type: [ string, "null" ]
+      required:
+        - id
+        - name
+        - description
       example:
         id: "12384829543245"
+        creator_id: "34734829543245"
         name: General
         description: A general place for conversation or smth :)
 
@@ -845,7 +862,7 @@ components:
         code:
           type: string
         room:
-          $ref: "#/components/schemas/Room"
+          $ref: "#/components/schemas/PartialRoom"
         creator:
           $ref: "#/components/schemas/User"
         uses:
