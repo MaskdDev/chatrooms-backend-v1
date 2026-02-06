@@ -42,6 +42,24 @@ export async function getInvite(inviteCode: string): Promise<Invite | null> {
 }
 
 /**
+ * Delete an invite with a given code. Returns whether a deletion was performed.
+ */
+export async function deleteInvite(inviteCode: string): Promise<boolean> {
+  // Create query
+  const query = `
+    delete from "room_invites" as "invites"
+    where "invites"."invite_code" = $1
+  `;
+  const values = [inviteCode];
+
+  // Run query
+  const results = await database.query(query, values);
+
+  // Return if anything was deleted
+  return !!results.rowCount;
+}
+
+/**
  * Get all invites for a room with a given ID.
  *
  * Returns null if room not found.
