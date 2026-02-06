@@ -13,9 +13,9 @@ export const database = new Pool({
 export async function getUser(userId: string): Promise<UserProfile | null> {
   // Create query
   const query = `
-    SELECT "id", "username", "displayUsername" AS "displayName", "image" AS "avatarUrl" 
-    FROM "users" 
-    WHERE id = $1
+    select "id", "username", "displayUsername" as "displayName", "image" as "avatarUrl" 
+    from "users" 
+    where id = $1
   `;
   const values = [userId];
 
@@ -37,18 +37,18 @@ export async function getUserRooms(userId: string): Promise<Room[]> {
   // Create query
   const query = `
     select 
-      "rooms"."room_id" as "id", "rooms"."name", "rooms"."description", 
-      jsonb_build_object(
-        'id', "users".id,
-        'username', "users"."username",
-        'displayName', "users"."displayUsername",
-        'avatarUrl', "users"."image"
-      ) filter ( where "users".id is not null ) as "creator"
+        "rooms"."room_id" as "id", "rooms"."name", "rooms"."description", 
+        jsonb_build_object(
+            'id', "users".id,
+            'username', "users"."username",
+            'displayName', "users"."displayUsername",
+            'avatarUrl', "users"."image"
+        ) filter ( where "users".id is not null ) as "creator"
     from "room_members"
     join "rooms"
-    on "rooms".room_id = "room_members".room_id
+        on "rooms".room_id = "room_members".room_id
     left join "users"
-    on "users".id = "rooms".creator_id
+        on "users".id = "rooms".creator_id
     where "room_members".member_id = $1
   `;
   const values = [userId];
@@ -99,6 +99,38 @@ export async function createRoom(
       name: roomRow.name,
       description: roomRow.description,
     };
+  } else {
+    return null;
+  }
+}
+
+/**
+ * Get a room with a given ID.
+ */
+export async function getRoom(roomId: bigint): Promise<Room | null> {
+  // Create query
+  const query = `
+    select 
+      "rooms"."room_id" as "id", "rooms"."name", "rooms"."description",
+      jsonb_build_object(
+      'id', "users".id,
+      'username', "users"."username",
+      'displayName', "users"."displayUsername",
+      'avatarUrl', "users"."image"
+                        ) filter ( where "users".id is not null ) as "creator"
+    from "rooms"
+    left join "users"
+        on "users".id = "rooms".creator_id
+    where "rooms".room_id = $1
+  `;
+  const values = [roomId];
+
+  // Run query
+  const results = await database.query(query, values);
+
+  // Check if room was found
+  if (results.rows.length === 1) {
+    return results.rows[0] as Room;
   } else {
     return null;
   }
