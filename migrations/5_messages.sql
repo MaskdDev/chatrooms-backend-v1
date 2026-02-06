@@ -20,6 +20,7 @@ create table if not exists "messages"
         on delete cascade,
     constraint fkey_messages_author_id foreign key (author_id)
         references "users" (id)
+        on delete set null
 );
 
 create index if not exists index_messages_room_id on "messages" (room_id);
