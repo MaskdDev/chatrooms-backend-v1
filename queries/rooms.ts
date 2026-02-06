@@ -66,6 +66,30 @@ export async function getRoom(roomId: bigint): Promise<Room | null> {
 }
 
 /**
+ * Return whether a room with a given ID exists.
+ */
+export async function roomExists(roomId: bigint): Promise<boolean> {
+  // Create query
+  const query = `
+  select exists (
+    select 1
+    from "rooms"
+    where "room_id" = $1
+  ) as result
+  `;
+
+  // Run query
+  const results = await database.query(query, [roomId]);
+
+  // Return result
+  if (results.rows.length === 1) {
+    return results.rows[0].result;
+  } else {
+    return false;
+  }
+}
+
+/**
  * Create a new room as a specified user, with a specified name and optional description.
  *
  * Throws an error on a fail.
