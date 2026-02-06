@@ -90,7 +90,7 @@ export async function createRoom(
   userId: string,
   name: string,
   description: string | null,
-): Promise<Room> {
+): Promise<PartialRoom> {
   // Generate room ID
   const roomId = generator.generate();
 
@@ -110,13 +110,10 @@ export async function createRoom(
     // Get row
     const roomRow: RoomRow = results.rows[0];
 
-    // Fetch creator
-    const creator = await getUser(roomRow.creator_id);
-
     // Return room
     return {
       id: roomRow.room_id,
-      creator,
+      creatorId: roomRow.creator_id,
       name: roomRow.name,
       description: roomRow.description,
     };

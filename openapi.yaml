@@ -936,7 +936,7 @@ components:
         id:
           type: string
         author:
-          $ref: "#/components/schemas/User"
+          $ref: "#/components/schemas/NullableUser"
         content:
           type: string
         timestamp:

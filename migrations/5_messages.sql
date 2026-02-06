@@ -7,7 +7,7 @@ create table if not exists "messages"
 
     -- Message information
     content        text        not null,
-    timestamp      timestamptz not null,
+    timestamp      timestamptz not null default now(),
     edit_timestamp timestamptz          default null,
 
     -- Record keeping

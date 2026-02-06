@@ -35,7 +35,7 @@ export type PartialRoom = {
  */
 export type RoomRow = {
   room_id: string;
-  creator_id: string;
+  creator_id: string | null;
   name: string;
   description: string | null;
 };
@@ -105,10 +105,22 @@ export type InviteCreate = {
  */
 export type Message = {
   id: string;
-  author: UserProfile;
+  author: UserProfile | null;
   content: string;
-  timestamp: string;
-  editedTimestamp: string | null;
+  timestamp: Date;
+  editedTimestamp: Date | null;
+};
+
+/**
+ * A type representing a row in the messages database table, without record keeping fields.
+ */
+export type MessageRow = {
+  message_id: string;
+  room_id: string;
+  author_id: string | null;
+  content: string;
+  timestamp: Date;
+  edit_timestamp: Date;
 };
 
 /**

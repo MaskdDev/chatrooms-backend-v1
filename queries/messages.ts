@@ -1,5 +1,7 @@
-import type { Message } from "../utils/types.ts";
+import type { Message, MessageRow, UserProfile } from "../utils/types.ts";
 import { database } from "../utils/database.ts";
+import generator from "../utils/snowflake.ts";
+import { getUser } from "./users.ts";
 
 /**
  * Get a specified number of messages from a given room, before/after a specified message ID (not inclusive).
@@ -84,5 +86,53 @@ export async function getMessage(messageId: bigint): Promise<Message | null> {
     return results.rows[0] as Message;
   } else {
     return null;
+  }
+}
+
+/**
+ * Create a new message in a specified room, as a specified user, with provided content.
+ *
+ * Throws an error on a fail.
+ */
+export async function createMessage(
+  roomId: bigint,
+  authorId: string,
+  content: string,
+): Promise<Message> {
+  // Generate room ID
+  const messageId = generator.generate();
+
+  // Create query
+  const query = `
+    insert into "messages" ("message_id", "room_id", "author_id", "content") 
+    values ($1, $2, $3, $4)
+    returning ("message_id", "room_id", "author_id", "content", "timestamp", "edit_timestamp")
+  `;
+  const values = [messageId, roomId, authorId, content];
+
+  // Run query
+  const results = await database.query(query, values);
+
+  // Return query result
+  if (results.rows.length === 1) {
+    // Get row
+    const messageRow: MessageRow = results.rows[0];
+
+    // Fetch author
+    let author: UserProfile | null = null;
+    if (messageRow.author_id) {
+      author = await getUser(messageRow.author_id);
+    }
+
+    // Return message
+    return {
+      id: messageRow.message_id,
+      author,
+      content: messageRow.content,
+      timestamp: messageRow.timestamp,
+      editedTimestamp: messageRow.edit_timestamp,
+    };
+  } else {
+    throw new Error("Could not create room.");
   }
 }
