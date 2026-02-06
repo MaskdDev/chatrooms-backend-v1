@@ -1,8 +1,7 @@
 import { Router } from "express";
 import { requireAuth } from "../utils/middleware.ts";
-import { getInvite } from "../queries/invites.ts";
+import { getInvite, deleteInvite } from "../queries/invites.ts";
 import { inviteNotFound } from "../utils/responses.ts";
-import invites from "./invites.ts";
 import { addMember, isMember } from "../queries/members.ts";
 
 // Create router for route group
@@ -82,6 +81,47 @@ router.post("/:inviteCode", async (req, res) => {
     } else {
       res.sendStatus(500);
     }
+  }
+});
+
+/**
+ * Delete an invite with a given code
+ */
+router.delete("/:inviteCode", async (req, res) => {
+  // Get user from request
+  const user = req.authUser;
+
+  // Check if user is authenticated
+  if (user) {
+    // Get invite code
+    const inviteCode = req.params.inviteCode;
+
+    // Get invite
+    const invite = await getInvite(inviteCode);
+
+    // Check if invite exists
+    if (!invite) {
+      return inviteNotFound(res);
+    }
+
+    // Get room ID
+    const roomId = BigInt(invite.room.id);
+
+    // Check if user can delete invite
+    if (
+      !(user.id === invite.room.creatorId || user.id === invite.creator?.id)
+    ) {
+      return res.status(403).json({
+        code: 403,
+        message: "User does not have the permission to delete this invite.",
+      });
+    }
+
+    // Delete invite
+    await deleteInvite(inviteCode);
+
+    // Return success
+    res.status(204);
   }
 });
 
