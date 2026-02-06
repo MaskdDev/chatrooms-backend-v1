@@ -62,18 +62,42 @@ export type RoomPatch = {
 export type Invite = {
   code: string;
   room: PartialRoom;
-  creator: UserProfile;
+  creator: UserProfile | null;
+  uses: number;
+  maxUses: number;
+  expires: Date;
+};
+
+/**
+ * A type representing a partial invite to a room, without the full room or creator objects.
+ */
+export type PartialInvite = {
+  code: string;
+  roomId: string;
+  creatorId: string | null;
+  uses: number;
+  maxUses: number;
+  expires: Date;
+};
+
+/**
+ * A type representing a row in the room_invites database table, without record keeping fields.
+ */
+export type InviteRow = {
+  invite_code: string;
+  room_id: string;
+  creator_id: string;
   uses: number;
   max_uses: number;
-  expiry: Date;
+  expires: Date;
 };
 
 /**
  * A type representing the body of a create invite request.
  */
 export type InviteCreate = {
-  max_uses: number;
-  expiry: Date;
+  maxUses: number;
+  expires: Date;
 };
 
 /**

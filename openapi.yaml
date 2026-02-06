@@ -816,6 +816,7 @@ components:
           type: [ string, "null" ]
       required:
         - id
+        - creator
         - name
         - description
 
@@ -825,36 +826,37 @@ components:
         id:
           type: string
         creatorId:
-          type: string
+          type: [ string, "null" ]
         name:
           type: string
         description:
           type: [ string, "null" ]
       required:
         - id
+        - creatorId
         - name
         - description
       example:
         id: "12384829543245"
-        creator_id: "34734829543245"
+        creatorId: "34734829543245"
         name: General
         description: A general place for conversation or smth :)
 
     InviteCreate:
       type: object
       properties:
-        max_uses:
+        maxUses:
           type: integer
           format: int32
-        expiry:
+        expires:
           type: string
           format: date-time
       required:
-        - max_uses
-        - expiry
+        - maxUses
+        - expires
       example:
-        max_uses: 5
-        expiry: 2026-02-02T22:00:00Z
+        maxUses: 5
+        expires: 2026-02-02T22:00:00Z
 
     Invite:
       type: object
@@ -864,14 +866,14 @@ components:
         room:
           $ref: "#/components/schemas/PartialRoom"
         creator:
-          $ref: "#/components/schemas/User"
+          $ref: "#/components/schemas/NullableUser"
         uses:
           type: integer
           format: int32
-        max_uses:
+        maxUses:
           type: integer
           format: int32
-        expiry:
+        expires:
           type: string
           format: date-time
       required:
@@ -880,8 +882,35 @@ components:
         - room
         - creator
         - uses
-        - max_uses
-        - expiry
+        - maxUses
+        - expires
+
+    PartialInvite:
+      type: object
+      properties:
+        code:
+          type: string
+        roomId:
+          type: string
+        creatorId:
+          type: string
+        uses:
+          type: integer
+          format: int32
+        maxUses:
+          type: integer
+          format: int32
+        expires:
+          type: string
+          format: date-time
+      required:
+        - id
+        - code
+        - roomId
+        - creatorId
+        - uses
+        - maxUses
+        - expires
 
     MessageCreate:
       type: object
