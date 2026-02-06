@@ -14,5 +14,4 @@ export type Room = {
   id: string;
   name: string;
   description: string | null;
-  visibility: boolean;
 };

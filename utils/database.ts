@@ -30,34 +30,12 @@ export async function getUser(userId: string): Promise<UserProfile | null> {
 }
 
 /**
- * Get all public rooms a given user is not in.
- */
-export async function getUnjoinedPublicRooms(userId: string): Promise<Room[]> {
-  // Create query
-  const query = `
-    select "room_id" as "id", "name", "description", "visibility"
-    from "rooms" 
-    where "visibility" = 'public' and not exists (
-      select 1
-      from "room_members" as "members"
-      where "member_id" = $1 and "members"."room_id" = "rooms".room_id
-    )
-  `;
-
-  // Run query
-  const results = await database.query(query);
-
-  // Return query result
-  return results.rows as Room[];
-}
-
-/**
  * Get all rooms the user with the given ID is in.
  */
 export async function getUserRooms(userId: string): Promise<Room[]> {
   // Create query
   const query = `
-    select "rooms"."room_id" as "id", "rooms"."name", "rooms"."description", "rooms"."visibility"
+    select "rooms"."room_id" as "id", "rooms"."name", "rooms"."description"
     from "room_members"
     join "rooms"
     on "rooms".room_id = "room_members".room_id
