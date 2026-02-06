@@ -136,15 +136,15 @@ export async function updateRoom(
   // Get fields to update
   const fields = [];
   const values = [];
-  let placeholderCount = 1;
+  let nextPlaceholder = 1;
 
   if (name !== undefined) {
-    fields.push(`"name" = $${placeholderCount++}`);
+    fields.push(`"name" = $${nextPlaceholder++}`);
     values.push(name);
   }
 
   if (description !== undefined) {
-    fields.push(`"description" = $${placeholderCount++}`);
+    fields.push(`"description" = $${nextPlaceholder++}`);
   }
 
   // Add room ID to values
@@ -154,7 +154,7 @@ export async function updateRoom(
   const query = `
     update "rooms"
     set ${fields.join(", ")}
-    where "rooms".room_id = $${placeholderCount}`;
+    where "rooms".room_id = $${nextPlaceholder}`;
 
   // Run query
   const results = await database.query(query, values);
