@@ -12,9 +12,13 @@ import type { InviteCreate, RoomCreate, RoomPatch } from "../utils/types.ts";
 import { getMembers, isMember, removeMember } from "../queries/members.ts";
 import { roomNotFound } from "../utils/responses.ts";
 import { createInvite, getRoomInvites } from "../queries/invites.ts";
+import messageRouter from "./messages.ts";
 
 // Create router for route group
 const router = Router();
+
+// Add sub-routers
+router.use("/:roomId/invites", messageRouter);
 
 // Use auth middleware
 router.use(requireAuth);
