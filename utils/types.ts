@@ -29,3 +29,11 @@ export type RoomRow = {
   name: string;
   description: string | null;
 };
+
+/**
+ * A type representing the body of a create room request.
+ */
+export type RoomCreate = {
+  name: string;
+  description?: string | null;
+};

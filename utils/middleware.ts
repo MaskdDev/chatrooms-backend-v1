@@ -1,0 +1,31 @@
+import { auth } from "./auth.ts";
+import type { Request, Response, NextFunction } from "express";
+
+/**
+ * Middleware that requires the user to be authenticated with BetterAuth.
+ * Adds authSession and authUser to request.
+ */
+export async function requireAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  // Get the current session
+  const session = await auth.api.getSession({
+    headers: req.headers,
+  });
+
+  // Check if the session has an authenticated user
+  if (!session?.user) {
+    return res
+      .status(401)
+      .json({ code: 401, message: "Authentication required." });
+  }
+
+  // Add session and user to request for use by handlers
+  req.authSession = session;
+  req.authUser = session.user;
+
+  // Call next function in stack
+  next();
+}
