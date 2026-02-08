@@ -1,5 +1,5 @@
 {
-  "name": "chatrooms-backend-v1",
+  "name": "chattr-backend",
   "module": "index.ts",
   "type": "module",
   "private": true,
