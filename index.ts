@@ -22,7 +22,7 @@ const server = createServer(app);
 // Use CORS and logging middleware
 app.use(
   cors({
-    origin: ["http://localhost:3001", "http://chattr.maskd.dev"],
+    origin: ["http://localhost:3001", "https://chattr.maskd.dev"],
     credentials: true,
     optionsSuccessStatus: 200,
   }),
