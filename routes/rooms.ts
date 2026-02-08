@@ -9,7 +9,12 @@ import {
   updateRoom,
 } from "../queries/rooms.ts";
 import type { InviteCreate, RoomCreate, RoomPatch } from "../utils/types.ts";
-import { getMembers, isMember, removeMember } from "../queries/members.ts";
+import {
+  addMember,
+  getMembers,
+  isMember,
+  removeMember,
+} from "../queries/members.ts";
 import { roomNotFound } from "../utils/responses.ts";
 import { createInvite, getRoomInvites } from "../queries/invites.ts";
 import messageRouter from "./messages.ts";
@@ -74,6 +79,9 @@ router.post("/", async (req, res) => {
 
     // Create room
     const room = await createRoom(user.id, body.name, body.description);
+
+    // Add member to room
+    await addMember(user.id, BigInt(room.id));
 
     // Return success
     res.status(201).json(room);
