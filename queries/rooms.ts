@@ -148,6 +148,7 @@ export async function updateRoom(
 
   if (description !== undefined) {
     fields.push(`"description" = $${nextPlaceholder++}`);
+    values.push(description);
   }
 
   // Add room ID to values
