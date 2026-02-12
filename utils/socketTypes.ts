@@ -7,8 +7,8 @@ export type SocketMessage =
   | MessageSocketMessage
   | PingSocketMessage
   | PongSocketMessage
-  | roomSubscribeSocketMessage
-  | roomUnsubscribeSocketMessage;
+  | RoomSubscribeSocketMessage
+  | RoomUnsubscribeSocketMessage;
 
 /**
  * A type representing a websocket message, indicating a new message has been sent.
@@ -36,7 +36,7 @@ export type PongSocketMessage = {
 /**
  * A type representing a client requesting to subscribe to one/many given rooms.
  */
-export type roomSubscribeSocketMessage = {
+export type RoomSubscribeSocketMessage = {
   type: "subscribe";
   roomId?: string;
   roomIds?: string[];
@@ -45,7 +45,7 @@ export type roomSubscribeSocketMessage = {
 /**
  * A type representing a client requesting to unsubscribe from one/many given room.
  */
-export type roomUnsubscribeSocketMessage = {
+export type RoomUnsubscribeSocketMessage = {
   type: "unsubscribe";
   roomId?: string;
   roomIds?: string[];
