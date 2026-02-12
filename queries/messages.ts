@@ -21,7 +21,7 @@ export async function getMessages(
   let nextPlaceholder = 2;
 
   // Create message filters, if required.
-  let messageFilter = " and ";
+  let messageFilter = "";
   if (beforeMessageId) {
     messageFilter += ` and "message_id" < $${nextPlaceholder++}`;
     values.push(beforeMessageId);
@@ -53,6 +53,8 @@ export async function getMessages(
     where "room_id" = $1 ${messageFilter}
     order by "message_id" desc
     limit $${nextPlaceholder++}`;
+
+  console.log(query);
 
   // Run query
   const results = await database.query(query, values);

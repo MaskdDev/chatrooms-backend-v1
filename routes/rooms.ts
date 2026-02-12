@@ -23,7 +23,7 @@ import messageRouter from "./messages.ts";
 const router = Router();
 
 // Add sub-routers
-router.use("/:roomId/invites", messageRouter);
+router.use("/:roomId/messages", messageRouter);
 
 // Use auth middleware
 router.use(requireAuth);
