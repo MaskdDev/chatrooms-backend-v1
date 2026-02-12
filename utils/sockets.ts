@@ -6,8 +6,8 @@ import { stringArrayToBigInt } from "./parsing.ts";
 import type { Message } from "./types.ts";
 
 // Websockets state
-const sockets: Map<WebSocket, bigint[]> = new Map();
-const subscriptions: Map<bigint, WebSocket[]> = new Map();
+const sockets: Map<WebSocket, Set<bigint>> = new Map();
+const subscriptions: Map<bigint, Set<WebSocket>> = new Map();
 
 // Subscribers map functions
 
@@ -17,9 +17,9 @@ const subscriptions: Map<bigint, WebSocket[]> = new Map();
 function addSubscriber(roomId: bigint, socket: WebSocket) {
   // Check if room is in subscriptions map
   if (subscriptions.has(roomId)) {
-    subscriptions.get(roomId)?.push(socket);
+    subscriptions.get(roomId)?.add(socket);
   } else {
-    subscriptions.set(roomId, [socket]);
+    subscriptions.set(roomId, new Set([socket]));
   }
 }
 
@@ -27,31 +27,19 @@ function addSubscriber(roomId: bigint, socket: WebSocket) {
  * Remove a subscriber from a room with a given ID.
  */
 function removeSubscriber(roomId: bigint, socket: WebSocket) {
-  // Check if room is in subscriptions map
-  if (subscriptions.has(roomId)) {
-    // Get subscriber array
-    const subscribers = subscriptions.get(roomId) as WebSocket[];
-
-    // Get socket index
-    const socketIndex = subscribers.indexOf(socket);
-
-    // If socket exists, remove it from array.
-    if (socketIndex >= 0) {
-      subscribers.splice(socketIndex, 1);
-    }
-  }
+  // If socket exists, remove it from set.
+  subscriptions.get(roomId)?.delete(socket);
 }
 
 /**
  * Send a websocket string message to all subscribers of a given room.
  */
 export function broadcastToSubscribers(roomId: bigint, message: Message) {
-  // Check if room is in subscriptions map
-  if (subscriptions.has(roomId)) {
-    // Get subscriber array
-    const subscribers = subscriptions.get(roomId) as WebSocket[];
+  // Get subscriber array
+  const subscribers = subscriptions.get(roomId);
 
-    // Broadcast message to all subscribers
+  // If there are any subscribers, broadcast message
+  if (subscribers !== undefined) {
     subscribers.forEach((socket) =>
       socket.send(
         JSON.stringify({
@@ -70,7 +58,7 @@ export function broadcastToSubscribers(roomId: bigint, message: Message) {
  */
 function registerWebSocket(socket: WebSocket) {
   // Add socket to map.
-  sockets.set(socket, []);
+  sockets.set(socket, new Set());
 }
 
 /**
