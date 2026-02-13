@@ -431,8 +431,12 @@ paths:
           schema:
             type: string
       responses:
-        "204":
+        "200":
           description: Successfully accepted invite.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invite"
         "401":
           description: Not Authorised.
           content:

@@ -77,7 +77,7 @@ router.post("/:inviteCode", async (req, res) => {
 
     // Check if user was added to room
     if (result) {
-      res.sendStatus(204);
+      res.status(200).json(invite);
     } else {
       res.sendStatus(500);
     }
