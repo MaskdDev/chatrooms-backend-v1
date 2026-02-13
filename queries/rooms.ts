@@ -99,11 +99,21 @@ export async function createRoom(
   const roomId = generator.generate();
 
   // Create query
-  const query = `
+  let query = "";
+  if (description !== null) {
+    query = `
     insert into "rooms" ("room_id", "creator_id", "name", "description") 
     values ($1, $2, $3, $4)
     returning *
   `;
+  } else {
+    query = `
+    insert into "rooms" ("room_id", "creator_id", "name") 
+    values ($1, $2, $3)
+    returning *
+  `;
+  }
+
   const values = [roomId, userId, name, description];
 
   // Run query
