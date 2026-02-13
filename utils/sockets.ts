@@ -21,6 +21,8 @@ function addSubscriber(roomId: bigint, socket: WebSocket) {
   } else {
     subscriptions.set(roomId, new Set([socket]));
   }
+
+  console.log(`Subscription added for ${roomId}`);
 }
 
 /**
@@ -29,6 +31,8 @@ function addSubscriber(roomId: bigint, socket: WebSocket) {
 function removeSubscriber(roomId: bigint, socket: WebSocket) {
   // If socket exists, remove it from set.
   subscriptions.get(roomId)?.delete(socket);
+
+  console.log(`Subscription removed for ${roomId}`);
 }
 
 /**
@@ -40,6 +44,9 @@ export function broadcastToSubscribers(roomId: bigint, message: Message) {
 
   // If there are any subscribers, broadcast message
   if (subscribers !== undefined) {
+    console.log(
+      `Broadcasting for ${roomId}. ${subscriptions.size} subscribers found.`,
+    );
     subscribers.forEach((socket) =>
       socket.send(
         JSON.stringify({
