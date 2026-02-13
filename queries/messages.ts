@@ -114,7 +114,7 @@ export async function createMessage(
   const query = `
     insert into "messages" ("message_id", "room_id", "author_id", "content") 
     values ($1, $2, $3, $4)
-    returning ("message_id", "room_id", "author_id", "content", "timestamp", "edit_timestamp")
+    returning "message_id", "room_id", "author_id", "content", "timestamp", "edit_timestamp"
   `;
   const values = [messageId, roomId, authorId, content];
 
