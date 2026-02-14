@@ -12,11 +12,17 @@ import {
   getMessages,
 } from "../queries/messages.ts";
 import type {
+  Message,
   MessageCreate,
+  MessageEdit,
   MessagePatch,
-  NewMessage,
 } from "../utils/types.ts";
 import { broadcastToSubscribers } from "../utils/sockets.ts";
+import type {
+  DeleteMessageEvent,
+  EditMessageEvent,
+  NewMessageEvent,
+} from "../utils/socketTypes.ts";
 
 // Create router for route group
 const router = Router({ mergeParams: true });
@@ -122,13 +128,20 @@ router.post("/", async (req: MergedRequest, res) => {
     const message = await createMessage(roomId, user.id, body.content);
 
     // Create new message object
-    const newMessage: NewMessage = {
+    const newMessage: Message = {
       nonce: body.nonce,
       ...message,
     };
 
-    // Send message to all subscribers
-    setTimeout(() => broadcastToSubscribers(roomId, newMessage), 0);
+    // Create new message event
+    const newMessageEvent: NewMessageEvent = {
+      type: "message_new",
+      roomId: message.roomId,
+      body: newMessage,
+    };
+
+    // Send new message event to all subscribers
+    setTimeout(() => broadcastToSubscribers(roomId, newMessageEvent), 0);
 
     // Return message
     res.status(200).json(message);
@@ -229,8 +242,36 @@ router.patch("/:messageId", async (req: MergedRequestWithMessage, res) => {
       });
     }
 
+    // Get edit timestamp
+    const editedTimestamp = new Date();
+
     // Edit message
-    await editMessage(messageId, body.content);
+    const editPerformed = await editMessage(
+      messageId,
+      body.content,
+      editedTimestamp,
+    );
+
+    // Check if edit was performed
+    if (editPerformed) {
+      // Create message edit object
+      const messageEdit: MessageEdit = {
+        id: message.id,
+        nonce: body.nonce,
+        content: body.content,
+        editedTimestamp,
+      };
+
+      // Create edit message event
+      const editMessageEvent: EditMessageEvent = {
+        type: "message_edit",
+        roomId: message.roomId,
+        body: messageEdit,
+      };
+
+      // Send edited message event to all subscribers
+      setTimeout(() => broadcastToSubscribers(roomId, editMessageEvent), 0);
+    }
 
     // Return success.
     res.sendStatus(204);
@@ -284,7 +325,20 @@ router.delete("/:messageId", async (req: MergedRequestWithMessage, res) => {
     }
 
     // Delete message
-    await deleteMessage(messageId);
+    const deletePerformed = await deleteMessage(messageId);
+
+    // Check if delete was performed
+    if (deletePerformed) {
+      // Create delete message event
+      const deleteMessageEvent: DeleteMessageEvent = {
+        type: "message_delete",
+        roomId: message.roomId,
+        messageId: message.id,
+      };
+
+      // Send delete message event to all subscribers
+      setTimeout(() => broadcastToSubscribers(roomId, deleteMessageEvent), 0);
+    }
 
     // Return success.
     res.sendStatus(204);

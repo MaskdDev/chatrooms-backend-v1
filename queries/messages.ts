@@ -154,13 +154,14 @@ export async function createMessage(
 export async function editMessage(
   messageId: bigint,
   newContent: string,
+  editTimestamp: Date,
 ): Promise<boolean> {
   // Create query
   const query = `
     update "messages"
-    set "content" = $1
-    where "message_id" = $2`;
-  const values = [newContent, messageId];
+    set "content" = $1, "edit_timestamp" = $2
+    where "message_id" = $3`;
+  const values = [newContent, editTimestamp, messageId];
 
   // Run query
   const results = await database.query(query, values);

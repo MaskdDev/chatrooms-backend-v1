@@ -114,16 +114,13 @@ export type Message = {
 };
 
 /**
- * A type representing a new message just sent in a room.
+ * A type representing a message edit in a room.
  */
-export type NewMessage = {
+export type MessageEdit = {
   id: string;
   nonce?: string;
-  roomId: string;
-  author: UserProfile | null;
   content: string;
-  timestamp: Date;
-  editedTimestamp: Date | null;
+  editedTimestamp: Date;
 };
 
 /**
@@ -151,4 +148,5 @@ export type MessageCreate = {
  */
 export type MessagePatch = {
   content: string;
+  nonce?: string;
 };
