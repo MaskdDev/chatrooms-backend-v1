@@ -1,7 +1,6 @@
 import type { Invite, InviteRow, PartialInvite } from "../utils/types.ts";
 import { database } from "../utils/database.ts";
 import { generateInviteCode } from "../utils/generation.ts";
-import { getUser } from "./users.ts";
 
 /**
  * Get an invite with a given code.

@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { requireAuth } from "../utils/middleware.ts";
-import { getInvite, deleteInvite } from "../queries/invites.ts";
+import {
+  getInvite,
+  deleteInvite,
+  incrementInviteUses,
+} from "../queries/invites.ts";
 import { inviteNotFound } from "../utils/responses.ts";
 import { addMember, isMember } from "../queries/members.ts";
 
@@ -74,6 +78,9 @@ router.post("/:inviteCode", async (req, res) => {
 
     // Add user to room
     const result = await addMember(user.id, roomId);
+
+    // Increment invite uses
+    await incrementInviteUses(invite.code);
 
     // Check if user was added to room
     if (result) {
